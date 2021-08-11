@@ -4,13 +4,15 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
+import Tooltip from '@material-ui/core/Tooltip';
 import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: 275,
     margin: theme.spacing(2),
   },
   title: {
@@ -21,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function TmTaskCard({task}) {
+export default function TmTaskCard({task, setSnackOpen, setMessage}) {
   const classes = useStyles();
 
   const unsubscribe = (taskId) => {
@@ -34,12 +36,53 @@ export default function TmTaskCard({task}) {
       }
     })
     .then(response => {
-      console.log(response);
+      const result = response["data"]["result"];
+      setSnackOpen(true);
+      setMessage(result["error"] ? result["error"] : result);
     })
     .catch(err => {
       console.error(err);
     });
   };
+
+  const resubscribe = (taskId) => {
+    axios.post('http://localhost:8080', {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "tm_resubscribe",
+      "params": {
+        "task_id": taskId
+      }
+    })
+    .then(response => {
+      const result = response["data"]["result"];
+      setSnackOpen(true);
+      setMessage(result["error"] ? result["error"] : result);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  };
+
+  const stop = (taskId) => {
+    axios.post('http://localhost:8080', {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "tm_stop_subscription",
+      "params": {
+        "task_id": taskId
+      }
+    })
+    .then(response => {
+      const result = response["data"]["result"];
+      setSnackOpen(true);
+      setMessage(result["error"] ? result["error"] : result);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  };
+
 
   return (
     <Card className={classes.root}>
@@ -62,10 +105,25 @@ export default function TmTaskCard({task}) {
         <Typography variant="body2" component="p">
           NODES: {task.nodes}
         </Typography>
-        <Chip className={classes.chip} size="small" label={task.status} color={task.status === "working" ? "primary" : "default"} />
+        <Box mt={1}>
+          {
+            task.status === "working" ?
+            <Chip className={classes.chip} size="small" label={task.status} color={"primary"} /> :
+            <Tooltip title={task.err_msg} aria-label="err" placement="right">
+              <Chip className={classes.chip} size="small" label={task.status} color={"default"} />
+            </Tooltip>
+          }
+        </Box>
       </CardContent>
       <CardActions>
-        <Button size="small" color="secondary" onClick={() => {unsubscribe(task.task_id)}}>Unsubscribe</Button>
+        <Grid container justifyContent="flex-end">
+          {
+            task.status === "working" ?
+            <Button size="small" color="default" onClick={() => {stop(task.task_id)}}>Stop</Button> : 
+            <Button size="small" color="primary" onClick={() => {resubscribe(task.task_id)}}>Resubscribe</Button>
+          }
+          <Button size="small" color="secondary" onClick={() => {unsubscribe(task.task_id)}}>Unsubscribe</Button>
+        </Grid>
       </CardActions>
     </Card>
   );

@@ -12,6 +12,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { blue } from '@material-ui/core/colors';
 import { TmTaskPage } from '../TmTaskPage';
+import { RocksSearchPage } from '../RocksSearchPage';
+import { TmBlockSearchPage } from '../TmBlockSearchPage';
+import { TmTxSearchPage } from '../TmTxSearchPage';
 
 const drawerWidth = 240;
 
@@ -33,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
   // necessary for content to be below app bar
   toolbar: theme.mixins.toolbar,
   content: {
-    flexGrow: 1,
+    width: `calc(100% - ${drawerWidth}px)`,
+    maxWidth: `calc(100% - ${drawerWidth}px)`,
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing(3),
   },
@@ -49,6 +53,19 @@ const theme = createTheme({
 
 export default function App() {
   const classes = useStyles();
+  const [page, setPage] = React.useState('TENDERMINT TASK');
+
+  const getPage = () => {
+    if (page === 'ROCKS SEARCH') {
+      return <RocksSearchPage />;
+    } else if (page === 'TENDERMINT BLOCKS') {
+      return <TmBlockSearchPage />;
+    } else if (page === 'TENDERMINT TXS') {
+      return <TmTxSearchPage />;
+    } else {
+      return <TmTaskPage />;
+    }
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -72,8 +89,16 @@ export default function App() {
           <div className={classes.toolbar} />
           <Divider />
           <List>
-            {['TENDERMINT TASK'].map((text, index) => (
-              <ListItem button key={text}>
+            {['TENDERMINT TASK', 'TENDERMINT BLOCKS', 'TENDERMINT TXS'].map((text, index) => (
+              <ListItem button key={text} onClick={() => setPage(text)}>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['ROCKS SEARCH'].map((text, index) => (
+              <ListItem button key={text} onClick={() => setPage(text)}>
                 <ListItemText primary={text} />
               </ListItem>
             ))}
@@ -81,7 +106,7 @@ export default function App() {
         </Drawer>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <TmTaskPage />
+          {getPage()}
         </main>
       </div>
     </ThemeProvider>

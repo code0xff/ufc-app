@@ -16,11 +16,13 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-    backgroundColor: theme.palette.background.default,
   },
   fab: {
     position: 'fixed',
@@ -38,6 +40,8 @@ export default function TmTaskPage() {
   const [startHeight, setStartHeight] = React.useState();
   const [nodes, setNodes] = React.useState();
   const [target, setTarget] = React.useState('block');
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [message, setMessage] = React.useState('block');
 
   React.useEffect(() => {
     loadTasks();
@@ -51,7 +55,13 @@ export default function TmTaskPage() {
       "params": {}
     })
     .then(response => {
-      setTasks(response['data']['result']);
+      const result = response['data']['result'];
+      if (result["error"]) {
+        setSnackOpen(true);
+        setMessage(result["error"]);
+      } else {
+        setTasks(result);
+      }
     })
     .catch(err => {
       console.error(err);
@@ -74,12 +84,14 @@ export default function TmTaskPage() {
         }
       })
       .then(response => {
+        const result = response['data']['result'];
         setTarget('block');
         setSubId('');
         setStartHeight('');
         setNodes('');
         setOpen(false);
-        alert(response.data.result);
+        setSnackOpen(true);
+        setMessage(result["error"] ? result["error"] : result);
       })
       .catch(err => {
         console.error(err);
@@ -89,7 +101,7 @@ export default function TmTaskPage() {
 
   return (
     <div className={classes.root}>
-      { tasks ? tasks.map((task, index) => <TmTaskCard key={index} task={task}/>) : null }
+      {tasks ? tasks.map((task, index) => <TmTaskCard key={index} task={task} setSnackOpen={setSnackOpen} setMessage={setMessage}/>) : null}
       <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => {setOpen(true)}}>
         <AddIcon />
       </Fab>
@@ -143,6 +155,23 @@ export default function TmTaskPage() {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={snackOpen}
+        autoHideDuration={5000}
+        onClose={() => {setSnackOpen(false)}}
+        message={message}
+        action={
+          <React.Fragment>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={() => {setSnackOpen(false)}}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </div>
   );
 }
