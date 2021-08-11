@@ -13,7 +13,7 @@ import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(2),
+    margin: theme.spacing(1),
   },
   title: {
     fontSize: 14,

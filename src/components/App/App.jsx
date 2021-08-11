@@ -56,7 +56,7 @@ export default function App() {
   const [page, setPage] = React.useState('TENDERMINT TASK');
 
   const getPage = () => {
-    if (page === 'ROCKS SEARCH') {
+    if (page === 'ROCKS') {
       return <RocksSearchPage />;
     } else if (page === 'TENDERMINT BLOCKS') {
       return <TmBlockSearchPage />;
@@ -97,7 +97,7 @@ export default function App() {
           </List>
           <Divider />
           <List>
-            {['ROCKS SEARCH'].map((text, index) => (
+            {['ROCKS'].map((text, index) => (
               <ListItem button key={text} onClick={() => setPage(text)}>
                 <ListItemText primary={text} />
               </ListItem>

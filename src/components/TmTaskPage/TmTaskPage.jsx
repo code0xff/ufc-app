@@ -17,12 +17,16 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Snackbar from '@material-ui/core/Snackbar';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(2),
   },
   fab: {
     position: 'fixed',
@@ -42,6 +46,7 @@ export default function TmTaskPage() {
   const [target, setTarget] = React.useState('block');
   const [snackOpen, setSnackOpen] = React.useState(false);
   const [message, setMessage] = React.useState('block');
+  const [taskId, setTaskId] = React.useState();
 
   React.useEffect(() => {
     loadTasks();
@@ -52,7 +57,9 @@ export default function TmTaskPage() {
       "jsonrpc": "2.0",
       "id": 1,
       "method": "tm_get_tasks",
-      "params": {}
+      "params": {
+        task_id: taskId
+      }
     })
     .then(response => {
       const result = response['data']['result'];
@@ -101,7 +108,28 @@ export default function TmTaskPage() {
 
   return (
     <div className={classes.root}>
-      {tasks ? tasks.map((task, index) => <TmTaskCard key={index} task={task} setSnackOpen={setSnackOpen} setMessage={setMessage}/>) : null}
+      <Grid container>
+        <Grid item xs={12}>
+          <Box component="div">
+            <TextField 
+              margin="dense" 
+              id="task_id" 
+              label="TASK ID" 
+              type="text" 
+              fullWidth
+              onChange={(e) => {setTaskId(e.target.value)}}
+            />
+          </Box>
+        </Grid>
+      </Grid>
+      <Grid container>
+        {tasks ? 
+          tasks.map((task, index) => (
+            <Grid item xs={6}>
+              <TmTaskCard key={index} task={task} setSnackOpen={setSnackOpen} setMessage={setMessage}/>        
+            </Grid>)) : 
+        null}
+      </Grid>
       <Fab color="primary" aria-label="add" className={classes.fab} onClick={() => {setOpen(true)}}>
         <AddIcon />
       </Fab>
