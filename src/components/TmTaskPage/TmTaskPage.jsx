@@ -110,7 +110,7 @@ export default function TmTaskPage() {
     <div className={classes.root}>
       <Grid container>
         <Grid item xs={12}>
-          <Box component="div">
+          <Box component="div" mb={1}>
             <TextField 
               margin="dense" 
               id="task_id" 
@@ -125,8 +125,8 @@ export default function TmTaskPage() {
       <Grid container>
         {tasks ? 
           tasks.map((task, index) => (
-            <Grid item xs={6}>
-              <TmTaskCard key={index} task={task} setSnackOpen={setSnackOpen} setMessage={setMessage}/>        
+            <Grid item xs={6} key={index}>
+              <TmTaskCard task={task} setSnackOpen={setSnackOpen} setMessage={setMessage}/>        
             </Grid>)) : 
         null}
       </Grid>
