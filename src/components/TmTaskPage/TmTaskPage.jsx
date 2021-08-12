@@ -47,6 +47,7 @@ export default function TmTaskPage() {
   const [snackOpen, setSnackOpen] = React.useState(false);
   const [message, setMessage] = React.useState('block');
   const [taskId, setTaskId] = React.useState();
+  const [filter, setFilter] = React.useState();
 
   React.useEffect(() => {
     loadTasks();
@@ -87,15 +88,17 @@ export default function TmTaskPage() {
           target: target,
           sub_id: subId,
           start_height: parseInt(startHeight),
+          filter: filter,
           nodes: nodesArray
         }
       })
       .then(response => {
         const result = response['data']['result'];
         setTarget('block');
-        setSubId('');
-        setStartHeight('');
-        setNodes('');
+        setSubId();
+        setStartHeight();
+        setNodes();
+        setFilter();
         setOpen(false);
         setSnackOpen(true);
         setMessage(result["error"] ? result["error"] : result);
@@ -163,6 +166,15 @@ export default function TmTaskPage() {
             type="text" 
             fullWidth 
             onChange={(e) => {setStartHeight(e.target.value)}}
+          />
+          <TextField 
+            error={!startHeight}
+            margin="dense" 
+            id="filter" 
+            label="FILTER" 
+            type="text" 
+            fullWidth 
+            onChange={(e) => {setFilter(e.target.value)}}
           />
           <TextField 
             error={!nodes}

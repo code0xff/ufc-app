@@ -103,6 +103,9 @@ export default function TmTaskCard({task, setSnackOpen, setMessage}) {
           CURRENT HEIGHT: {task.curr_height}
         </Typography>
         <Typography variant="body2" component="p">
+          FILTER: {task.filter}
+        </Typography>
+        <Typography variant="body2" component="p">
           NODES: {task.nodes}
         </Typography>
         <Box mt={1}>
