@@ -90,16 +90,16 @@ export default function App() {
           <Divider />
           <List>
             {['TENDERMINT TASK', 'TENDERMINT BLOCKS', 'TENDERMINT TXS'].map((text, index) => (
-              <ListItem button key={text} onClick={() => setPage(text)}>
-                <ListItemText primary={text} />
+              <ListItem button key={index} onClick={() => setPage(text)}>
+                  <ListItemText primary={<Typography type="body2" style={{ color: text === page ? blue[700] : null }}>{text}</Typography>}/>
               </ListItem>
             ))}
           </List>
           <Divider />
           <List>
             {['ROCKS'].map((text, index) => (
-              <ListItem button key={text} onClick={() => setPage(text)}>
-                <ListItemText primary={text} />
+              <ListItem button key={index} onClick={() => setPage(text)}>
+               <ListItemText primary={<Typography type="body2" style={{ color: text === page ? blue[700] : null }}>{text}</Typography>}/>
               </ListItem>
             ))}
           </List>
