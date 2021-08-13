@@ -150,9 +150,13 @@ export default function TmTxSearchPage() {
           {
             rows && rows.length > 0 ?
             rows.map((row, index) => {
-              const isJson = checkJson(row["raw_log"]);
-              const rawLog = isJson ? JSON.parse(row["raw_log"]) : row["raw_log"];
+              let is_json = checkJson(row["raw_log"]);
+              const rawLog = is_json ? JSON.parse(row["raw_log"]) : row["raw_log"];
               row["raw_log"] = rawLog;
+
+              is_json = checkJson(row["fee"]);
+              const fee = is_json ? JSON.parse(row["fee"]) : row["fee"];
+              row["fee"] = fee;
               return (
                 <Paper key={index} className={classes.tx}>
                   <Box component="div" p={2}>
