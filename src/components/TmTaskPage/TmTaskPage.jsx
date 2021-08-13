@@ -21,6 +21,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { constants } from '../../constants/constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -201,7 +202,7 @@ export default function TmTaskPage() {
           horizontal: 'left',
         }}
         open={snackOpen}
-        autoHideDuration={5000}
+        autoHideDuration={constants.autoHideTime}
         onClose={() => {setSnackOpen(false)}}
         message={message}
         action={

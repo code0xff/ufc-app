@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { constants } from '../../constants/constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,7 +36,7 @@ export default function TmBlockSearchPage() {
 
   const [fromHeight, setFromHeight] = React.useState();
   const [toHeight, setToHeight] = React.useState();
-  const [order, setOrder] = React.useState('asc');
+  const [order, setOrder] = React.useState('desc');
   const [rows, setRows] = React.useState();
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState(false);
@@ -111,8 +112,8 @@ export default function TmBlockSearchPage() {
                   value={order}
                   onChange={(e) => {setOrder(e.target.value)}}
                 >
-                <MenuItem value={"asc"}>ASC</MenuItem>
                 <MenuItem value={"desc"}>DESC</MenuItem>
+                <MenuItem value={"asc"}>ASC</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -150,7 +151,7 @@ export default function TmBlockSearchPage() {
           horizontal: 'left',
         }}
         open={open}
-        autoHideDuration={5000}
+        autoHideDuration={constants.autoHideTime}
         onClose={() => {setOpen(false)}}
         message={message}
         action={

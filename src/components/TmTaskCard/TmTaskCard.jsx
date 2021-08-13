@@ -106,7 +106,7 @@ export default function TmTaskCard({task, setSnackOpen, setMessage}) {
           FILTER: {task.filter}
         </Typography>
         <Typography variant="body2" component="p">
-          NODES: {task.nodes}
+          NODES: {task.nodes[task.node_idx]}
         </Typography>
         <Box mt={1}>
           {

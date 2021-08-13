@@ -10,6 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { constants } from '../../constants/constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -96,7 +97,7 @@ export default function RocksSearchPage() {
           horizontal: 'left',
         }}
         open={open}
-        autoHideDuration={5000}
+        autoHideDuration={constants.autoHideTime}
         onClose={() => {setOpen(false)}}
         message={message}
         action={
