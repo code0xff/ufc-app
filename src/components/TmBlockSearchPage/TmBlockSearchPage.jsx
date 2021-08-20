@@ -69,7 +69,7 @@ export default function TmBlockSearchPage() {
     });
   };
 
-  const openMintsacn = (number) => {
+  const openMintscan = (number) => {
     window.open("https://www.mintscan.io/cosmos/blocks/" + number, "_blank");
   }
 
@@ -135,7 +135,7 @@ export default function TmBlockSearchPage() {
           {
             rows && rows.length > 0 ?
             rows.map((row, index) => (
-              <Paper key={index} className={classes.block} onClick={() => openMintsacn(row['height'])}>
+              <Paper key={index} className={classes.block} onClick={() => openMintscan(row['height'])}>
                 <Box component="div" p={2}>
                   <pre>{JSON.stringify(row, null, 2)}</pre>
                 </Box>

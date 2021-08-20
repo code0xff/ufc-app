@@ -84,7 +84,7 @@ export default function TmTxSearchPage() {
     });
   }
 
-  const openMintsacn = (txhash) => {
+  const openMintscan = (txhash) => {
     window.open("https://www.mintscan.io/cosmos/txs/" + txhash, "_blank");
   }
 
@@ -165,7 +165,7 @@ export default function TmTxSearchPage() {
             rows && rows.length > 0 ?
             rows.map((row, index) => {
               return (
-                <Paper key={index} className={classes.tx} onClick={() => openMintsacn(row['txhash'])}>
+                <Paper key={index} className={classes.tx} onClick={() => openMintscan(row['txhash'])}>
                   <Box component="div" p={2}>
                     <pre>{JSON.stringify(row, null, 2)}</pre>
                   </Box>
