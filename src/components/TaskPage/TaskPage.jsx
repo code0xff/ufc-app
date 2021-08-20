@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { TmTaskCard } from '../TmTaskCard';
+import { TaskCard } from '../TaskCard';
 import axios from 'axios';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
@@ -18,7 +18,6 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Snackbar from '@material-ui/core/Snackbar';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { constants } from '../../constants/constants';
@@ -36,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TmTaskPage() {
+export default function TaskPage({methods}) {
   const classes = useStyles();
 
   const [tasks, setTasks] = React.useState([]);
@@ -47,7 +46,6 @@ export default function TmTaskPage() {
   const [target, setTarget] = React.useState('block');
   const [snackOpen, setSnackOpen] = React.useState(false);
   const [message, setMessage] = React.useState('block');
-  const [taskId, setTaskId] = React.useState();
   const [filter, setFilter] = React.useState();
 
   React.useEffect(() => {
@@ -58,9 +56,8 @@ export default function TmTaskPage() {
     axios.post('http://localhost:8080', {
       "jsonrpc": "2.0",
       "id": 1,
-      "method": "tm_get_tasks",
+      "method": methods['get_tasks'],
       "params": {
-        task_id: taskId
       }
     })
     .then(response => {
@@ -84,7 +81,7 @@ export default function TmTaskPage() {
       axios.post('http://localhost:8080', {
         "jsonrpc": "2.0",
         "id": 1,
-        "method": "tm_subscribe",
+        "method": methods['subscribe'],
         "params": {
           target: target,
           sub_id: subId,
@@ -113,24 +110,10 @@ export default function TmTaskPage() {
   return (
     <div className={classes.root}>
       <Grid container>
-        <Grid item xs={12}>
-          <Box component="div" mb={1}>
-            <TextField 
-              margin="dense" 
-              id="task_id" 
-              label="TASK ID" 
-              type="text" 
-              fullWidth
-              onChange={(e) => {setTaskId(e.target.value)}}
-            />
-          </Box>
-        </Grid>
-      </Grid>
-      <Grid container>
         {tasks ? 
           tasks.map((task, index) => (
             <Grid item xs={6} key={index}>
-              <TmTaskCard task={task} setSnackOpen={setSnackOpen} setMessage={setMessage}/>        
+              <TaskCard task={task} setSnackOpen={setSnackOpen} setMessage={setMessage} methods={methods}/>        
             </Grid>)) : 
         null}
       </Grid>

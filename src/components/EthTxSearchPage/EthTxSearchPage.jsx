@@ -11,11 +11,11 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { checkJson } from '../../utils/json';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { constants } from '../../constants/constants';
+import { convertToDecimal } from '../../utils/number';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function TmTxSearchPage() {
+export default function EthTxSearchPage() {
   const classes = useStyles();
 
   const [fromHeight, setFromHeight] = React.useState();
@@ -57,7 +57,7 @@ export default function TmTxSearchPage() {
     axios.post("http://localhost:8080", {
       "jsonrpc": "2.0",
       "id": 1,
-      "method": "tm_mysql_get_txs",
+      "method": "eth_mysql_get_txs",
       "params": params
     })
     .then(response => {
@@ -66,17 +66,13 @@ export default function TmTxSearchPage() {
         setOpen(true);
         setMessage(result["error"]);
       } else {
-        const rawRows = result;
-        rawRows.forEach(rawRow => {
-          let is_json = checkJson(rawRow["raw_log"]);
-          const rawLog = is_json ? JSON.parse(rawRow["raw_log"]) : rawRow["raw_log"];
-          rawRow["raw_log"] = rawLog;
-  
-          is_json = checkJson(rawRow["fee"]);
-          const fee = is_json ? JSON.parse(rawRow["fee"]) : rawRow["fee"];
-          rawRow["fee"] = fee;
+        let raw_rows = result;
+        raw_rows.forEach(raw_row => {
+          raw_row['blockNumber'] = convertToDecimal(raw_row['blockNumber']);
+          raw_row['nonce'] = convertToDecimal(raw_row['nonce']);
+          raw_row['transactionIndex'] = convertToDecimal(raw_row['transactionIndex']);
         });
-        setRows(rawRows);
+        setRows(result);
       }
     })
     .catch(err => {
@@ -84,8 +80,8 @@ export default function TmTxSearchPage() {
     });
   }
 
-  const openMintsacn = (txhash) => {
-    window.open("https://www.mintscan.io/cosmos/txs/" + txhash, "_blank");
+  const openEthersacn = (hash) => {
+    window.open("https://etherscan.io/tx/" + hash, "_blank");
   }
 
   return (
@@ -165,7 +161,7 @@ export default function TmTxSearchPage() {
             rows && rows.length > 0 ?
             rows.map((row, index) => {
               return (
-                <Paper key={index} className={classes.tx} onClick={() => openMintsacn(row['txhash'])}>
+                <Paper key={index} className={classes.tx} onClick={() => {openEthersacn(row['hash'])}}>
                   <Box component="div" p={2}>
                     <pre>{JSON.stringify(row, null, 2)}</pre>
                   </Box>

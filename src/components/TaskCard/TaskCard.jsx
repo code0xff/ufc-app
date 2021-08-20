@@ -23,14 +23,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function TmTaskCard({task, setSnackOpen, setMessage}) {
+export default function TaskCard({task, setSnackOpen, setMessage, methods}) {
   const classes = useStyles();
 
   const unsubscribe = (taskId) => {
     axios.post('http://localhost:8080', {
       "jsonrpc": "2.0",
       "id": 1,
-      "method": "tm_unsubscribe",
+      "method": methods['unsubscribe'],
       "params": {
         "task_id": taskId
       }
@@ -49,7 +49,7 @@ export default function TmTaskCard({task, setSnackOpen, setMessage}) {
     axios.post('http://localhost:8080', {
       "jsonrpc": "2.0",
       "id": 1,
-      "method": "tm_resubscribe",
+      "method": methods['resubscribe'],
       "params": {
         "task_id": taskId
       }
@@ -68,7 +68,7 @@ export default function TmTaskCard({task, setSnackOpen, setMessage}) {
     axios.post('http://localhost:8080', {
       "jsonrpc": "2.0",
       "id": 1,
-      "method": "tm_stop_subscription",
+      "method": methods['stop_subscription'],
       "params": {
         "task_id": taskId
       }

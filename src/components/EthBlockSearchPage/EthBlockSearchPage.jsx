@@ -11,11 +11,12 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { checkJson } from '../../utils/json';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { constants } from '../../constants/constants';
+import { convertToDecimal } from '../../utils/number';
+import { convertToDate } from '../../utils/time';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,38 +28,34 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'space-between'
   },
-  tx: {
-    marginBottom: theme.spacing(2),
+  block: {
+    marginBottom: theme.spacing(2)
   }
 }));
 
-export default function TmTxSearchPage() {
+export default function EthBlockSearchPage() {
   const classes = useStyles();
 
   const [fromHeight, setFromHeight] = React.useState();
   const [toHeight, setToHeight] = React.useState();
-  const [txhash, setTxhash] = React.useState();
   const [order, setOrder] = React.useState('desc');
   const [rows, setRows] = React.useState();
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState(false);
 
-  const getTxs = () => {
-    if (!txhash && (!fromHeight || !toHeight || !order)) {
+  const getBlocks = () => {
+    if (!fromHeight || !toHeight || !order) {
       return;
     }
-
-    let params;
-    if (txhash) {
-      params = {txhash: txhash};
-    } else {
-      params = {from_height: parseInt(fromHeight), to_height: parseInt(toHeight), order: order};
-    }
-    axios.post("http://localhost:8080", {
+    axios.post('http://localhost:8080', {
       "jsonrpc": "2.0",
       "id": 1,
-      "method": "tm_mysql_get_txs",
-      "params": params
+      "method": "eth_mysql_get_blocks",
+      "params": {
+        from_height: parseInt(fromHeight),
+        to_height: parseInt(toHeight),
+        order: order,
+      }
     })
     .then(response => {
       let result = response["data"]["result"];
@@ -66,26 +63,22 @@ export default function TmTxSearchPage() {
         setOpen(true);
         setMessage(result["error"]);
       } else {
-        const rawRows = result;
-        rawRows.forEach(rawRow => {
-          let is_json = checkJson(rawRow["raw_log"]);
-          const rawLog = is_json ? JSON.parse(rawRow["raw_log"]) : rawRow["raw_log"];
-          rawRow["raw_log"] = rawLog;
-  
-          is_json = checkJson(rawRow["fee"]);
-          const fee = is_json ? JSON.parse(rawRow["fee"]) : rawRow["fee"];
-          rawRow["fee"] = fee;
+        let raw_rows = result;
+        raw_rows.forEach(raw_row => {
+          raw_row['number'] = convertToDecimal(raw_row['number']);
+          raw_row['size'] = convertToDecimal(raw_row['size']);
+          raw_row['timestamp'] = convertToDate(raw_row['timestamp']);
         });
-        setRows(rawRows);
+        setRows(raw_rows);
       }
     })
     .catch(err => {
       console.error(err);
     });
-  }
+  };
 
-  const openMintsacn = (txhash) => {
-    window.open("https://www.mintscan.io/cosmos/txs/" + txhash, "_blank");
+  const openEthersacn = (number) => {
+    window.open("https://etherscan.io/block/" + number, "_blank");
   }
 
   return (
@@ -123,20 +116,6 @@ export default function TmTxSearchPage() {
       <Grid container className={classes.input}>
         <Grid item xs={6}>
           <Box pr={4}>
-            <TextField 
-              error={!txhash}
-              margin="dense" 
-              id="txhash" 
-              label="TX HASH" 
-              type="text" 
-              fullWidth
-              className={classes.item}
-              onChange={(e) => {setTxhash(e.target.value)}}
-            />
-          </Box>
-        </Grid>
-        <Grid item xs={6}>
-          <Box pl={4}>
             <FormControl fullWidth>
               <InputLabel id="order-label">ORDER</InputLabel>
                 <Select
@@ -155,7 +134,7 @@ export default function TmTxSearchPage() {
       <Grid container>
         <Grid item xs={12}>
           <Box component="div" m={2} style={{ textAlign: "center" }}>
-            <Button variant="contained" color="primary" onClick={getTxs}>GET TXS</Button>
+            <Button variant="contained" color="primary" onClick={getBlocks}>GET BLOCKS</Button>
           </Box>
         </Grid>
       </Grid>
@@ -165,12 +144,13 @@ export default function TmTxSearchPage() {
             rows && rows.length > 0 ?
             rows.map((row, index) => {
               return (
-                <Paper key={index} className={classes.tx} onClick={() => openMintsacn(row['txhash'])}>
+                <Paper key={index} className={classes.block} onClick={() => {openEthersacn(row['number'])}}>
                   <Box component="div" p={2}>
                     <pre>{JSON.stringify(row, null, 2)}</pre>
                   </Box>
-                </Paper>)
-            }):
+                </Paper>
+              )}
+            ):
             <Paper>
               <Box component="div" p={2}>
                 <Typography style={{textAlign: "center"}}>Empty</Typography> 

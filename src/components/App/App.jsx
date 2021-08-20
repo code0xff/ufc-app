@@ -11,10 +11,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { blue } from '@material-ui/core/colors';
-import { TmTaskPage } from '../TmTaskPage';
+import { TaskPage } from '../TaskPage';
 import { RocksSearchPage } from '../RocksSearchPage';
 import { TmBlockSearchPage } from '../TmBlockSearchPage';
 import { TmTxSearchPage } from '../TmTxSearchPage';
+import { EthBlockSearchPage } from '../EthBlockSearchPage';
+import { EthTxSearchPage } from '../EthTxSearchPage';
 
 const drawerWidth = 240;
 
@@ -62,8 +64,28 @@ export default function App() {
       return <TmBlockSearchPage />;
     } else if (page === 'TENDERMINT TXS') {
       return <TmTxSearchPage />;
-    } else {
-      return <TmTaskPage />;
+    } else if (page === 'TENDERMINT TASK') {
+      let methods = { 
+        get_tasks: "tm_get_tasks", 
+        subscribe: "tm_subscribe", 
+        unsubscribe: "tm_unsubscribe", 
+        resubscribe: "tm_resubscribe", 
+        stop_subscription: "tm_stop_subscription" 
+      };
+      return <TaskPage methods={methods}/>;
+    } else if (page === 'ETHEREUM BLOCKS') {
+      return <EthBlockSearchPage />;
+    } else if (page === 'ETHEREUM TXS') {
+      return <EthTxSearchPage />;
+    }else if (page === 'ETHEREUM TASK') {
+      let methods = { 
+        get_tasks: "eth_get_tasks", 
+        subscribe: "eth_subscribe", 
+        unsubscribe: "eth_unsubscribe", 
+        resubscribe: "eth_resubscribe", 
+        stop_subscription: "eth_stop_subscription" 
+      };
+      return <TaskPage methods={methods}/>;
     }
   }
 
@@ -90,6 +112,14 @@ export default function App() {
           <Divider />
           <List>
             {['TENDERMINT TASK', 'TENDERMINT BLOCKS', 'TENDERMINT TXS'].map((text, index) => (
+              <ListItem button key={index} onClick={() => setPage(text)}>
+                  <ListItemText primary={<Typography type="body2" style={{ color: text === page ? blue[700] : null }}>{text}</Typography>}/>
+              </ListItem>
+            ))}
+          </List>
+          <Divider />
+          <List>
+            {['ETHEREUM TASK', 'ETHEREUM BLOCKS', 'ETHEREUM TXS'].map((text, index) => (
               <ListItem button key={index} onClick={() => setPage(text)}>
                   <ListItemText primary={<Typography type="body2" style={{ color: text === page ? blue[700] : null }}>{text}</Typography>}/>
               </ListItem>
